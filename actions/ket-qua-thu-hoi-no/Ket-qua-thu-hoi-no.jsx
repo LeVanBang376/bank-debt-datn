@@ -1,4 +1,4 @@
-import KqthnAPI from 'apis/ket-qua-thu-hoi-no/ket-qua-thu-hoi-no'
+import KqthnAPI from 'apis/ket-qua-thu-hoi-no/Ket-qua-thu-hoi-no'
 
 export const addDebtRecoveryResult = (body) =>
   KqthnAPI.addDebtRecoveryResult(body)
