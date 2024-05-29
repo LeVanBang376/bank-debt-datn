@@ -107,6 +107,17 @@ const NonePerformingLoanList = (props) => {
     setOnConfirm('')
   }
 
+  const renderSoNgayQuaHan = (rowData) => {
+    console.log(rowData.du_no_the_td?.ngay_chuyen_nhom_3)
+    if (rowData.du_no_the_td?.ngay_chuyen_nhom_3) {
+      const startDate = new Date(rowData.du_no_the_td?.ngay_chuyen_nhom_3)
+      const endDate = new Date()
+      const diffInTime = endDate.getTime() - startDate.getTime()
+      const diffInDays = Math.floor(diffInTime / (1000 * 3600 * 24))
+      return diffInDays
+    }
+  }
+
   const renderAction = (rowData) => {
     return (
       <React.Fragment>
@@ -156,6 +167,12 @@ const NonePerformingLoanList = (props) => {
     return (
       <Link href={`/khach-hang/chi-tiet?id=${rowData.ma_khach_hang}`}>{rowData.ma_khach_hang}</Link>
     )
+  }
+
+  const renderDaThanhToan = (rowData) => {
+    if (rowData.du_no_the_td?.da_thanh_toan) {
+      return <div>{Math.round(rowData.du_no_the_td?.da_thanh_toan)}</div>
+    }
   }
 
   const informAddSuccessfully = () => {
@@ -213,17 +230,22 @@ const NonePerformingLoanList = (props) => {
           <Column field="ho_ten" header="Họ và tên" style={{ minWidth: '12rem' }} />
           <Column field="can_cuoc" header="Căn cước công dân" style={{ minWidth: '11rem' }} />
           <Column field="dien_thoai" header="Số điện thoại" style={{ minWidth: '10rem' }} />
-          <Column field="nhom_no" header="Nhóm nợ" style={{ minWidth: '7rem' }} />
-          <Column field="so_ngay_qua_han" header="Số ngày quá hạn" style={{ minWidth: '10rem' }} />
+          <Column field="du_no_the_td.nhom_no" header="Nhóm nợ" style={{ minWidth: '7rem' }} />
           <Column
-            field="tong_du_no_hien_tai"
+            header="Số ngày quá hạn"
+            style={{ minWidth: '10rem' }}
+            body={renderSoNgayQuaHan}
+          />
+          <Column
+            field="du_no_the_td.tong_du_no"
             header="Tổng dư nợ hiện tại"
             style={{ minWidth: '12rem' }}
           />
           <Column
-            field="so_tien_da_thanh_toan"
+            // field="du_no_the_td.da_thanh_toan"
             header="Số tiền đã thanh toán"
             style={{ minWidth: '13rem' }}
+            body={renderDaThanhToan}
           />
           <Column style={{ minWidth: '1rem' }} body={renderAction} />
         </DataTable>

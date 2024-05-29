@@ -64,11 +64,18 @@ const DebtRecoveryActions = (props) => {
   const [searchResult, setSearchResult] = useState('')
 
   const toast = useRef(null)
-
+  console.log(props.user.ma_nhan_vien)
   const getActions = () => {
-    getListActions(`ma_nhan_vien=${props.user?.ma_nhan_vien}&` + query).then((res) => {
-      setData(res.results)
-    })
+    if (props.user?.ma_nhan_vien.indexOf('NDH') === 0) {
+      getListActions(query).then((res) => {
+        setData(res.results)
+      })
+    }
+    if (props.user?.ma_nhan_vien.indexOf('SHB') === 0) {
+      getListActions(`ma_nhan_vien=${props.user?.ma_nhan_vien}&` + query).then((res) => {
+        setData(res.results)
+      })
+    }
   }
 
   const getActionCategories = () => {
@@ -88,7 +95,7 @@ const DebtRecoveryActions = (props) => {
   }
 
   const getListCustomers = () => {
-    getListCustomer('queryAll=true').then((res) => {
+    getListCustomer(`queryAll=true&ma_nhan_vien=${props.user.ma_nhan_vien}`).then((res) => {
       setCustomers(res.results)
     })
   }
@@ -468,7 +475,7 @@ const DebtRecoveryActions = (props) => {
               />
             </div>
             {addedError && (
-              <div style={{ color: 'red', marginBottom: '12px' }}>
+              <div style={{ color: 'red', marginBottom: '12px' }} id="added_error">
                 Khách hàng này đã được thêm hành động thu hồi nợ
               </div>
             )}
@@ -511,7 +518,7 @@ const DebtRecoveryActions = (props) => {
               </label>
               <AutoComplete
                 placeholder="Search"
-                id="dd"
+                id="cccd"
                 dropdown
                 value={selectedAutoValue2}
                 onChange={(e) => {
@@ -542,6 +549,7 @@ const DebtRecoveryActions = (props) => {
                 Loại hành động <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="loai_hanh_dong"
                 value={actionType}
                 onChange={(e) => {
                   setActionType(e.value)
@@ -564,6 +572,7 @@ const DebtRecoveryActions = (props) => {
                 Tên hành động <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="ten_hanh_dong"
                 value={actionName}
                 onChange={(e) => {
                   setActionName(e.value)
@@ -590,6 +599,7 @@ const DebtRecoveryActions = (props) => {
                 Kết quả <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="ket_qua"
                 value={result}
                 onChange={(e) => {
                   setResult(e.value)
@@ -605,7 +615,7 @@ const DebtRecoveryActions = (props) => {
             <div className="field">
               <label htmlFor="SDT">Ghi chú</label>
               <InputTextarea
-                id="SDT"
+                id="ghi_chu"
                 type="text"
                 placeholder="Ghi chú"
                 rows={4}
@@ -620,6 +630,7 @@ const DebtRecoveryActions = (props) => {
                 Đánh giá <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="danh_gia"
                 value={evaluation}
                 onChange={(e) => {
                   setEvaluation(e.value)
@@ -643,6 +654,7 @@ const DebtRecoveryActions = (props) => {
                   onClick={() => onCancel()}
                 />
                 <Button
+                  id="add_button"
                   label="Thêm"
                   style={{ width: '80px', height: '36px', marginLeft: '16px' }}
                   onClick={() => {
@@ -710,6 +722,7 @@ const DebtRecoveryActions = (props) => {
                 Loại hành động <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="loai_hanh_dong"
                 value={actionType}
                 onChange={(e) => {
                   setActionType(e.value)
@@ -739,6 +752,7 @@ const DebtRecoveryActions = (props) => {
                 Tên hành động <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="ten_hanh_dong"
                 value={actionName}
                 onChange={(e) => {
                   setActionName(e.value)
@@ -766,6 +780,7 @@ const DebtRecoveryActions = (props) => {
                 Kết quả <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="ket_qua"
                 value={result}
                 onChange={(e) => {
                   setResult(e.value)
@@ -796,6 +811,7 @@ const DebtRecoveryActions = (props) => {
                 Đánh giá <span style={{ color: 'red' }}>*</span>
               </label>
               <Dropdown
+                id="danh_gia"
                 value={evaluation}
                 onChange={(e) => {
                   setEvaluation(e.value)
@@ -819,6 +835,7 @@ const DebtRecoveryActions = (props) => {
                   onClick={() => onCancelUpdate()}
                 />
                 <Button
+                  id="update_button"
                   label="Cập nhật"
                   style={{ width: '96px', height: '36px', marginLeft: '16px' }}
                   onClick={() => {
@@ -1026,11 +1043,13 @@ const DebtRecoveryActions = (props) => {
                 onClick={() => trainModelAI()}
               />
             )}
-            <Button
-              label="Thêm"
-              style={{ height: '36px', width: '100px' }}
-              onClick={() => setShowDialog(true)}
-            />
+            {props.user.role === 'SHB' && (
+              <Button
+                label="Thêm"
+                style={{ height: '36px', width: '100px' }}
+                onClick={() => setShowDialog(true)}
+              />
+            )}
           </div>
         </div>
 
@@ -1043,6 +1062,7 @@ const DebtRecoveryActions = (props) => {
             setActionData={setActionData}
             getData={getData}
             setIsUpdating={setIsUpdating}
+            role={props.user.role}
           />
         </div>
       </div>

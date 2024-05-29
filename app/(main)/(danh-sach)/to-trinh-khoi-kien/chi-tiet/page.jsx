@@ -243,7 +243,7 @@ const ChiTietToTrinhKhoiKien = (props) => {
             style={{ height: '36px', width: '100px' }}
             onClick={() => handleAdd()}
           />
-        ) : props.user.role !== 'NPD' ? (
+        ) : props.user.role === 'SHB' && detail.trang_thai === 'Chưa duyệt' ? (
           <Button label="Lưu thay đổi" style={{ height: '36px' }} onClick={() => handleUpdate()} />
         ) : (
           detail.trang_thai?.toLowerCase() === 'chưa duyệt' && (
@@ -279,11 +279,29 @@ const ChiTietToTrinhKhoiKien = (props) => {
         detail={detail}
       />
 
-      <DeXuat suggestion={suggestion} setSuggestion={setSuggestion} />
+      <DeXuat
+        isCreateNew={isCreateNew}
+        suggestion={suggestion}
+        setSuggestion={setSuggestion}
+        role={props.user.role}
+        approvedOrRefused={detail.trang_thai !== 'Chưa duyệt'}
+      />
 
-      <DanhGia evaluations={evaluations} setEvaluations={setEvaluations} />
+      <DanhGia
+        isCreateNew={isCreateNew}
+        evaluations={evaluations}
+        setEvaluations={setEvaluations}
+        role={props.user.role}
+        approvedOrRefused={detail.trang_thai !== 'Chưa duyệt'}
+      />
 
-      <TinhHinhXLNQuaHan xlnSituation={xlnSituation} setXlnSituation={setXlnSituation} />
+      <TinhHinhXLNQuaHan
+        isCreateNew={isCreateNew}
+        xlnSituation={xlnSituation}
+        setXlnSituation={setXlnSituation}
+        role={props.user.role}
+        approvedOrRefused={detail.trang_thai !== 'Chưa duyệt'}
+      />
     </div>
   )
 }

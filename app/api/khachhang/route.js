@@ -11,7 +11,10 @@ export async function GET(request) {
   const ma_nhan_vien = obj['ma_nhan_vien']
 
   if (obj['offset'] && obj['limit']) {
-    const { data, error } = await supabase.from('khach_hang').select('*').range(offset, limit)
+    const { data, error } = await supabase
+      .from('khach_hang')
+      .select('*, du_no_the_td(id, nhom_no, ngay_chuyen_nhom_3, tong_du_no, da_thanh_toan)')
+      .range(offset, limit)
     if (error) {
       return NextResponse.json(
         {
@@ -20,13 +23,17 @@ export async function GET(request) {
         { status: 500 }
       )
     }
-
+    data.sort((a, b) => -a.ma_khach_hang + b.ma_khach_hang)
     return NextResponse.json(
       { count: data.length, next: null, previous: null, results: data },
       { status: 200 }
     )
   } else {
-    let apiQuery = supabase.from('khach_hang').select('*', { count: 'exact' })
+    let apiQuery = supabase
+      .from('khach_hang')
+      .select('*, du_no_the_td(id, nhom_no, ngay_chuyen_nhom_3, tong_du_no, da_thanh_toan)', {
+        count: 'exact',
+      })
     if (ma_nhan_vien && ma_nhan_vien.indexOf('SHB') >= 0) {
       apiQuery = apiQuery.eq('nhan_vien_phu_trach_1', ma_nhan_vien)
     }
@@ -39,6 +46,7 @@ export async function GET(request) {
         { status: 500 }
       )
     }
+    data.sort((a, b) => -a.ma_khach_hang + b.ma_khach_hang)
 
     return NextResponse.json(
       { count: count, next: null, previous: null, results: data },
@@ -85,10 +93,30 @@ export async function POST(request) {
       return error
     }
 
+    let nguoi_than = []
+    if (dataToCreate.nguoi_than_khach_hang) {
+      nguoi_than = dataToCreate.nguoi_than_khach_hang
+      delete dataToCreate.nguoi_than_khach_hang
+    }
+
     const { error } = await supabase.from('khach_hang').insert(dataToCreate)
 
     if (error) {
       return NextResponse.json({ body: JSON.stringify(error) }, { status: 500 })
+    }
+
+    // Add relatives
+    if (nguoi_than.length > 0) {
+      const addedCustomerIdArr = nguoi_than.map((item) => {
+        return {
+          ...item,
+          ma_khach_hang: dataToCreate.ma_khach_hang,
+        }
+      })
+      const { error } = await supabase.from('nguoi_than_khach_hang').insert(addedCustomerIdArr)
+      if (error) {
+        return NextResponse.json({ body: JSON.stringify(error) }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ body: 'Inserted' }, { status: 200 })
